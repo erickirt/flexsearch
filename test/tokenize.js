@@ -5,8 +5,8 @@ let FlexSearch = await import(env ? "../dist/" + env + ".js" : "../src/bundle.js
 if(FlexSearch.default) FlexSearch = FlexSearch.default;
 if(FlexSearch.FlexSearch) FlexSearch = FlexSearch.FlexSearch;
 const { Index, Document, Worker, Charset: _Charset, Encoder, Resolver } = FlexSearch;
-const build_light = env && env.includes(".light");
-const build_compact = env && env.includes(".compact");
+const build_light = env && env.includes("light");
+const build_compact = env && env.includes("compact");
 const build_esm = !env || env.startsWith("module");
 const Charset = _Charset || (await import("../src/charset.js")).default;
 
@@ -25,6 +25,17 @@ describe("Tokenizer", function(){
 
         expect(index.search("björn phillipp")).to.include(0);
         expect(index.search("björn mayer")).to.include(0);
+    });
+
+    it("Should have been added properly to the index: Tolerant", function(){
+
+        let index = new Index({ tokenize: "tolerant" });
+        index.add(0, "björn phillipp mayer");
+
+        expect(index.search("björn phillipp")).to.include(0);
+        expect(index.search("bjönr mayre")).to.include(0);
+        expect(index.search("bjön maer")).to.include(0);
+        expect(index.search("börn myaer")).to.include(0);
     });
 
     it("Should have been added properly to the index: Forward", function(){

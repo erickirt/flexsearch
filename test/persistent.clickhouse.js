@@ -5,17 +5,15 @@ let FlexSearch = await import(env ? "../dist/" + env + ".js" : "../src/bundle.js
 if(FlexSearch.default) FlexSearch = FlexSearch.default;
 if(FlexSearch.FlexSearch) FlexSearch = FlexSearch.FlexSearch;
 const { Index, Document, Worker, Charset: _Charset, Encoder, Resolver } = FlexSearch;
-const build_light = env && env.includes(".light");
-const build_compact = env && env.includes(".compact");
+const build_light = env && env.includes("light");
+const build_compact = env && env.includes("compact");
 const build_esm = !env || env.startsWith("module");
 const Charset = _Charset || (await import("../src/charset.js")).default;
 
-import Clickhouse_src from "../src/db/clickhouse/index.js";
-import Clickhouse_dist from "../dist/module/db/clickhouse/index.js";
 import tests from "./persistent.js";
 
 if(!build_light && !build_compact){
-    describe("Persistent: Clickhouse", function(){
-        tests(env ? Clickhouse_dist : Clickhouse_src, "Clickhouse");
+    describe("Persistent: Clickhouse", async function(){
+        await tests("Clickhouse");
     });
 }

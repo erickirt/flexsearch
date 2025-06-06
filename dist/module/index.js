@@ -60,6 +60,12 @@ export default function Index(options, _register) {
 
     this.map = tmp && !0 ? new KeystoreMap(tmp) : new Map();
     this.ctx = tmp && !0 ? new KeystoreMap(tmp) : new Map();
+    /** @type {
+     *   Set<string|number>|
+     *   Map<Array<string|number>>|
+     *   KeystoreSet<string|number>|
+     *   KeystoreMap<Array<string|number>>
+     * } */
     this.reg = _register || (this.fastupdate ? tmp && !0 ? new KeystoreMap(tmp) : new Map() : tmp && !0 ? new KeystoreSet(tmp) : new Set());
     this.resolution_ctx = context.resolution || 3;
     this.rtl = encoder.rtl || options.rtl || !1;
@@ -85,12 +91,12 @@ Index.prototype.mount = function (db) {
     }
     return db.mount(this);
 };
-Index.prototype.commit = function (replace, append) {
+Index.prototype.commit = function () {
     if (this.commit_timer) {
         clearTimeout(this.commit_timer);
         this.commit_timer = null;
     }
-    return this.db.commit(this, replace, append);
+    return this.db.commit(this);
 };
 Index.prototype.destroy = function () {
     if (this.commit_timer) {
@@ -102,15 +108,12 @@ Index.prototype.destroy = function () {
 
 /**
  * @param {!Index} self
- * @param {boolean=} replace
- * @param {boolean=} append
  */
-
-export function autoCommit(self, replace, append) {
+export function autoCommit(self) {
     if (!self.commit_timer) {
         self.commit_timer = setTimeout(function () {
             self.commit_timer = null;
-            self.db.commit(self, replace, append);
+            self.db.commit(self);
         }, 1);
     }
 }

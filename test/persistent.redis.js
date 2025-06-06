@@ -5,17 +5,15 @@ let FlexSearch = await import(env ? "../dist/" + env + ".js" : "../src/bundle.js
 if(FlexSearch.default) FlexSearch = FlexSearch.default;
 if(FlexSearch.FlexSearch) FlexSearch = FlexSearch.FlexSearch;
 const { Index, Document, Worker, Charset: _Charset, Encoder, Resolver } = FlexSearch;
-const build_light = env && env.includes(".light");
-const build_compact = env && env.includes(".compact");
+const build_light = env && env.includes("light");
+const build_compact = env && env.includes("compact");
 const build_esm = !env || env.startsWith("module");
 const Charset = _Charset || (await import("../src/charset.js")).default;
 
-import Redis_src from "../src/db/redis/index.js";
-import Redis_dist from "../dist/module/db/redis/index.js";
 import tests from "./persistent.js";
 
 if(!build_light && !build_compact){
-    describe("Persistent: Redis", function(){
-        tests(env ? Redis_dist : Redis_src, "Redis");
+    describe("Persistent: Redis", async function(){
+        await tests("Redis");
     });
 }

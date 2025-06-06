@@ -891,7 +891,7 @@ Global Members:
 `Index` / `Worker`-Index Methods:
 
 - index.[**add**](#add-text-item-to-an-index)(id, string)
-- ~~index.[**append**]()(id, string)~~
+- index.[**append**]()(id, string)
 - index.[**update**](#update-item-from-an-index)(id, string)
 - index.[**remove**](#remove-item-from-an-index)(id)
 - index.[**search**](#search-items)(string, \<limit\>, \<options\>)
@@ -910,7 +910,7 @@ Global Members:
 ##
 
 - <small>_async_</small> index.[**mount**](doc/persistent.md)(db)
-- <small>_async_</small> index.[**commit**](doc/persistent.md)(boolean)
+- <small>_async_</small> index.[**commit**](doc/persistent.md)()
 - <small>_async_</small> index.[**destroy**](doc/persistent.md#delete-store--migration)()
 
 ---
@@ -918,7 +918,7 @@ Global Members:
 `Document` Methods:
 
 - document.[**add**](doc/document-search.md#addupdateremove-documents)(\<id\>, document)
-- ~~document.[**append**]()(\<id\>, document)~~
+- document.[**append**]()(\<id\>, document)
 - document.[**update**](doc/document-search.md#addupdateremove-documents)(\<id\>, document)
 - document.[**remove**](doc/document-search.md#addupdateremove-documents)(id)
 - document.[**remove**](doc/document-search.md#addupdateremove-documents)(document)
@@ -939,7 +939,7 @@ Global Members:
 ##
 
 - <small>_async_</small> document.[**mount**](doc/persistent.md)(db)
-- <small>_async_</small> document.[**commit**](doc/persistent.md)(boolean)
+- <small>_async_</small> document.[**commit**](doc/persistent.md)()
 - <small>_async_</small> document.[**destroy**](doc/persistent.md#delete-store--migration)()
 
 `Document` Properties:
@@ -951,10 +951,11 @@ Global Members:
 Async Equivalents (Non-Blocking Balanced):
 
 - <small>_async_</small> [**.addAsync**](doc/async.md)( ... , \<callback\>)
-- <small>_async_</small> ~~[**.appendAsync**](doc/async.md)( ... , \<callback\>)~~
+- <small>_async_</small> [**.appendAsync**](doc/async.md)( ... , \<callback\>)
 - <small>_async_</small> [**.updateAsync**](doc/async.md)( ... , \<callback\>)
 - <small>_async_</small> [**.removeAsync**](doc/async.md)( ... , \<callback\>)
 - <small>_async_</small> [**.searchAsync**](doc/async.md)( ... , \<callback\>)
+- <small>_async_</small> [**.searchCacheAsync**](doc/async.md)( ... , \<callback\>)
 
 Async methods will return a `Promise`, additionally you can pass a callback function as the last parameter.
 
@@ -988,6 +989,7 @@ Methods `.export()` and also `.import()` are always async as well as every metho
 `Resolver` Properties:
 
 - resolver.[**result**](doc/resolver.md)
+- resolver.[**await**](doc/resolver.md) (Async)
 
 ---
 
@@ -998,6 +1000,7 @@ Methods `.export()` and also `.import()` are always async as well as every metho
 - <small>_async_</small> db.[**close**](doc/persistent.md)()
 - <small>_async_</small> db.[**destroy**](doc/persistent.md)()
 - <small>_async_</small> db.[**clear**](doc/persistent.md)()
+- <small>_async_</small> db.[**commit**](doc/persistent.md)(index)
 
 ---
 
@@ -1171,6 +1174,7 @@ index.remove(0).update(1, 'foo').add(2, 'foobar');
         <td>tokenize</td>
         <td>
             "strict" / "exact"<br>
+            "tolerant"<br>
             "forward"<br>
             "reverse" / "bidirectional<br>
             "full"
@@ -1435,6 +1439,13 @@ Try to choose the most upper of these tokenizer which covers your requirements:
     </tr>
     <tr></tr>
     <tr>
+        <td><code>"tolerant"</code></td>
+        <td>index the full term by also being tolerant against typos like swapped letters and missing letters</td>
+        <td><code>foobra</code><br><code>foboar</code><br><code>foobr</code><br><code>fooba</code></td>
+        <td>2(n - 2) + 2</td>
+    </tr>
+    <tr></tr>
+    <tr>
         <td><code>"full"</code></td>
         <td>index every consecutive partial</td>
         <td>fo<code>oba</code>r<br>f<code>oob</code>ar</td>
@@ -1510,9 +1521,9 @@ Encoding is one of the most important task and heavily influence:
 
 FlexSearch provides several methods to achieve fuzziness to make queries more tolerant:
 
-1. Use a tokenizer: `forward`, `reverse` or `full`
-2. Don't forget to use any of the builtin encoder `simple` > `balance` > `advanced` > `extra` > `soundex` (sorted by fuzziness)
-3. Use one of the language specific presets e.g. `/lang/en.js` for en-US specific content
+1. Use a tokenizer: `tolerant`, `forward`, `reverse` or `full`
+2. Consider using any of the builtin encoder `normalize` > `balance` > `advanced` > `extra` > `soundex` (sorted by fuzziness)
+3. Use one of the language-specific presets e.g. `/lang/en.js` for en-US specific content
 4. Enable suggestions by passing the search option `suggest: true`
 
 Additionally, you can apply custom `Mapper`, `Replacer`, `Stemmer`, `Filter` or by assigning a custom `normalize(str)`, `prepare(str)` or `finalize(arr)` function to the Encoder.
